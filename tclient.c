@@ -23,16 +23,24 @@ int main(int argc, char* argv[])
 	int ret = connect(sock, (struct sockaddr*)&server, sizeof(server));
 	if(ret < 0){
 		perror("connect");
+		return 1;
 	}
 	printf("connect success\n");
 	while(1){
-		printf("client:");
-		fgets(buf, sizeof(buf)-1, stdin);
-		buf[strlen(buf)] = 0;
-		write(sock, buf, sizeof(buf));
-		printf("wait..\n");
 		memset(buf, 0, sizeof(buf));
-		read(sock, buf, sizeof(buf));
+		printf("client:");
+		fflush(stdout);
+		int read_size = read(0, buf, sizeof(buf)-1);
+		buf[read_size-1] = 0;
+		write(sock, buf, read_size+1);
+		printf("wait for server..\n");
+		memset(buf, 0, sizeof(buf));
+		if((read_size = read(sock, buf, sizeof(buf))) == 0){
+			printf("server close!\n");
+			fflush(stdout);
+			return 1;
+		}
+		buf[read_size] = 0;
 		printf("server:%s\n", buf);
 	}
 	close(sock);
