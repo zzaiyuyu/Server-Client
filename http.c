@@ -1,3 +1,4 @@
+/*使用telnet 工具可以测试http服务器*/
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
